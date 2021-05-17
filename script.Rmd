@@ -5,7 +5,7 @@ date: 'May 17, 2021'
 output: github_document
 ---
 
-R's [tidyverse](https://www.tidyverse.org/) comes with a very handy package called [purrr](https://purrr.tidyverse.org/). You will likely have a use for it if you're manipulating data in R on a regular basis. Let's run through how it works and some workflows where its usefulness should be apparent.
+R's [tidyverse](https://www.tidyverse.org/) comes with a very handy package called [purrr](https://purrr.tidyverse.org/). If you're manipulating data in the tidyverse on a regular basis, you will likely have a use for it. Let's run through how it works and some workflows where its usefulness will hopefully be apparent.
 
 ## The theory behind purrr
 
@@ -27,9 +27,9 @@ a.plan.to.do.something = function(item) {
 map(a.thing.with.many.items, a.plan.to.do.something)
 ```
 
-In this case, we've written ahead of time the task we want to do to each `item` and placed that into a function. Then we've called a different function, `map()`, which goes over the items and applies the function to each one.
+In this case, we've written ahead of time the task we want to do to each item and placed that into a function. Then we've called a different function, `map()`, which goes over the items and applies the function to each one.
 
-It takes a little bit of forethought to write code this way, but the upsides are numerous. `purrr` provides major speed upgrades over loops (thanks to execution done in the C language under the hood) and helps you separate your code into functions and steps where the functions are executed.
+It takes a little bit of forethought to write code this way, but the upsides are numerous. Purrr provides major speed upgrades over loops (thanks to execution done in the C language under the hood) and helps you separate your code places where functions are defined and places where functions are executed.
 
 Let's run through how the various `map()` functions work. I'll start by bringing in the entire tidyverse, usually the first line of code I write at the top of any R script.
 
@@ -37,7 +37,7 @@ Let's run through how the various `map()` functions work. I'll start by bringing
 library(tidyverse)
 ```
 
-As the printout shows, `library(tidyverse)` is a shorthand for importing eight different packages, one of which is `purrr`.
+As the printout shows, this is a shorthand for importing eight different packages, one of which is purrr.
 
 Here is a simple example using some made-up data. (I understand that made-up data is not exactly the purview of journalists, and I typically scoff at examples like this, but it'll hopefully serve a purpose before we move on.) Say I had three different collections of numbers, and I wanted to get the mean for each group.
 
@@ -63,7 +63,7 @@ my.calcs
 
 1. A collection of items to iterate over. There are two basic types of collections in R: vectors and lists. Vectors are a collection of items of the same type: logical values, integers, doubles (floating point numbers) and characters. While vectors are homogeneous by rule, lists are collections that can hold a variety of types. In my example above, I set up a list holding three integer vectors.
 
-2. A function to use on each item. If you've set up the function ahead of time, or you're using a function that already exists in base R or a pacakge, you must only refer to it by name (`mean`) as opposed to calling the function (`mean()`). There are ways to write the function without setting it up ahead of time, which we'll cover later.
+2. A function to use on each item. If you've set up the function ahead of time, or you're using a function that already exists in base R or a package, you must only refer to it by name (`mean`) as opposed to calling the function (`mean()`). There are ways to write the function without setting it up ahead of time, which we'll cover later.
 
 ## Types of purrr functions
 
@@ -104,7 +104,7 @@ class(my.calcs2)
 
 You'll also notice a difference in the environment pane of RStudio if you're following along with this example. `my.calcs` should be listed as a `List of 3` while `my.calcs2` should say `Named num [1:3] 8 8 8`, a sign that the latter is a vector.
 
-Thankfully, if you're working with tabular data, you'll rarely have to peek under the hood like this. The specifics of what needs to be inputted and outputted will hopefully be a little more clearer with a more concrete exmaple.
+Thankfully, if you're working with tabular data, you'll rarely have to peek under the hood like this. The specifics of what needs to be inputted and outputted will hopefully be a little more clearer with a more concrete example.
 
 ## Using purrr in data analysis
 
@@ -112,7 +112,7 @@ purrr really shines when it's used in a analysis workflow to manipulate your tab
 
 I'll assume that you have some basic knowledge of the tidyverse (if not I highly recommend [R for Data Science](https://r4ds.had.co.nz/), an excellent free resource that covers the entirety of the tidyverse, including purrr).
 
-We're going to attempt a task that should be familiar to most journalists: You receive a data set that spans multiple files, with one file for each year of the data. We need to bring them all in to R and assemble a single file.
+We're going to attempt a task that should be familiar to most journalists: You receive a data set that spans multiple files, with one file for each year of the data. You then need to bring them all in to R and assemble a single file.
 
 In the `data/` folder of this repository you'll see yearly CSVs for the gapminder data set on the health and wealth of nations, popularized by the late [Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling). Let's read one in to take a look:
 
@@ -120,7 +120,7 @@ In the `data/` folder of this repository you'll see yearly CSVs for the gapminde
 read_csv('data/1952.csv')
 ```
 
-Let's begin a process to put this all together in a tabular fashion. That means we'll stick to using the tidyverse's structures for organizing data, namely `tibbles`, and the manipulation functions provided by `dplyr`, such as `mutate()` to add new columns. This will help us keep the file names (which we'll need to extract the year field) organized alongside the data (which lacks a year field).
+Let's begin a process to put this all together in a tabular fashion. That means we'll stick to using the tidyverse's structures for organizing data, namely tibbles, and the manipulation functions provided by the dplyr package, such as `mutate()` to add new columns. This will help us keep the file names (which we'll need to extract the year field) organized alongside the data (which lack a year field).
 
 First, let's start with a list of all the file names:
 
@@ -153,9 +153,9 @@ files.read = files %>%
 
 files.read
 ```
-One big plus of tidyverse tibbles is how it prints results to the console. For one, it provides the type of each column (columns must adhere to a single type). In this case we've created `csv` with the type `<list>`. This is what's referred to as a list-column. As mentioned earlier, purrr's `map()` by default returns a list. That was really the only logical output here: THe output of a `read_csv()` call is a tibble, which is a fancy kind of list.
+One big plus of tidyverse tibbles is how it prints results to the console. For one, it provides the type of each column (columns must adhere to a single type). In this case we've created `csv` with the type `<list>`. This is what's referred to as a list-column. As mentioned earlier, purrr's `map()` by default returns a list. That was really the only logical output here: The output of a `read_csv()` call is a tibble, which is a fancy kind of list.
 
-When it comes to this result, I like to think of each "cell" of the `csv` column holding a table of its own. (You definitely cannot do this in Excel.) The tibble printouts further help to see this: In the console, each cell should say something like `<spec_tbl_df[,5] [142 × 5]>`, which means a 142-row, 5-column tibble is being held in that cell.
+When it comes to this result, I like to think of each "cell" of the `csv` column holding a table of its own. (You definitely cannot do this in Excel.) The tibble printouts further help to see this: In the console, each cell says something like `<spec_tbl_df[,5] [142 × 5]>`, which means a 142-row, 5-column tibble is being held in that cell.
 
 That printout obscures a lot of information, but it's easy enough to inspect an element at a time, using basic R notation for traversing into lists:
 
@@ -194,7 +194,7 @@ Let's try one more slightly complicated example that illustrates this.
 
 Let's go through another workflow which journalists may have a need for. Say we wanted to make a plot for each country, looking at its life expectancy over time. (For the sake of simplicity we'll do five plots, but this can easily be extended.)
 
-First, we need our data grouped by country. This requires a `nest()` on the final data set from above. The simplest way I've found to do this is to ask for a grouping, before calling `nest()`:
+First, we need our data grouped by country. This requires us to nest the final data set from above. The simplest way I've found to do this is to ask for a grouping, before calling `nest()`:
 
 ```{r}
 set.seed(1)
@@ -209,11 +209,13 @@ by.country = full.data %>%
 by.country
 ```
 
-Now we'll use that data list-column to make a plot.
+Now we'll use that `data` list-column to make a plot.
 
-So far, we've used functions that have already been written as part of a package. This time, we'll need a custom function: It'll need to take this particular data and send it to a `ggplot()` call with all of the right parameters.
+So far, we've used functions that have already been written as part of a package. This time, we'll need a custom function: It'll need to take this particular tibble and send it to a `ggplot()` call with all of the right parameters.
 
-While it's nice to have a clearly defined function to place into your purrr function, oftentimes you'll want to test things out before writing a separate function. Thankfully purrr provides ways to define inline functions. They begin with a tilde `~` and accept some shorthand arguments: `.x` for the first argument and (in the case of a `map2()` call) `.y` for the second argument become available for you to use. Here's how we can quickly send our data column, which becomes `.x`, into `ggplot()` to begin the process of creating plots for each country:
+While it's nice to have a named function to place into your purrr function, oftentimes you'll want to test things out before writing a separate function. Purrr provides ways to define inline functions. They begin with a tilde `~` and accept some shorthand arguments: `.x` for the first argument and (in the case of a `map2()` call) `.y` for the second argument.
+
+Here's how we can quickly send our data column, which becomes `.x`, into `ggplot()` to begin the process of creating plots for each country:
 
 ```{r}
 plots = by.country %>% 
@@ -229,7 +231,7 @@ plots = by.country %>%
 plots
 ```
 
-Again, tibbles helpfully provide a nice printout to see what we're working with. Again, we have a list-column in `plot`, with each cell holding a `<gg>` object, which should be a the plots themselves. Let's take a look at that column to see what we made:
+Again, tibbles helpfully provide a nice printout to see what we're working with. We have a list-column in `plot`, with each cell holding a `<gg>` object, which should be a the plots themselves. Let's take a look at that column to see what we made:
 
 ```{r}
 plots %>% pull(plot) # equivalent to plots$plot
@@ -252,6 +254,7 @@ plots = by.country %>%
 
 plots %>% pull(plot)
 ```
+
 With the help of the labels it's slightly easier to see that Botswana is the country which suffered the steep dip in life expectancy (this is due to a [long-lasting HIV/AIDS epidemic](https://en.wikipedia.org/wiki/HIV/AIDS_in_Botswana) in the country that still persists to this day).
 
 Finally, let's save these plots to a folder. We can use a purrr style workflow to do that as well. This time we'll use the `walk()` function, which is identical to `map()` except that it returns nothing. Since we'd like to only save plots and do nothing else, a `walk()` will work fine here. This also doesn't need to stick to the tabular workflow we have used above, since nothing needs to be added as a column to the tibble.
@@ -267,8 +270,10 @@ walk2(
 )
 ```
 
+The examples using `map2()` and `walk2()` highlight a hidden advantage of adapting the list-column workflow I've outlined above: One of the restrictions on using the functions with two inputs is that the inputs must be of the same length. The functions will throw an error if this condition is not met. But if you're passing tibble columns into a purrr function, it's virtually impossible to violate this requirement, since columns are always created with the same length as the number of rows in the tibble.
+
 ## Other purrr resources
 
-* Jenny Bryan, a data scientist at RStudio and professor of statistics at the University of British Columbia, has a host of [purrr tutorials](https://jennybc.github.io/purrr-tutorial/). They are more focused on the fundamentals of purrr and less on the list-column workflow outlined here, but are helpful nonetheless. Her `repurrrsive` package helped me create the gapminder data files (see `create-data.R` in this folder for that brief script).
-* I mentioned [R for Data Science](https://r4ds.had.co.nz/) earlier, an excellent introduction to all things tidyverse. The chapter called [Many Models](https://r4ds.had.co.nz/many-models.html) was particularly helpful for me understanding purrr. It explains how to create many different `lm()` objects and place them in a list column.
-* A word for the `furrr` package: Say you had to generate thousands of plots, instead of this limited example here. You might be interested in the 
+* Jenny Bryan, a data scientist at RStudio and professor of statistics at the University of British Columbia, has a host of [purrr tutorials](https://jennybc.github.io/purrr-tutorial/). They are more focused on the fundamentals of purrr and less on the list-column workflow outlined here, but are helpful nonetheless. Her repurrrsive package helped me create the gapminder data files (see [create-data.R](/create-data.R) in this folder for that brief script).
+* I mentioned [R for Data Science](https://r4ds.had.co.nz/) earlier, an excellent introduction to all things tidyverse. The chapter called [Many Models](https://r4ds.had.co.nz/many-models.html) was particularly helpful for me when it came to understanding purrr. It explains how to create many different `lm()` objects and place them in a list-column.
+* A few words on the [furrr](https://furrr.futureverse.org/) package: Say you had to generate thousands of plots, instead of this limited example here. You might be interested in the furrr package, which runs purrr functions in parallel processes on your machine, to speed up your workflow. The under-the-hood mechanics of this are a little bit beyond me, but the package is really easy to use. Every purrr function has a furrr equivalent: You just need to prepend `future_` to the function call, creating `future_map()`, `future_map2()`, `future_pmap()` and more. That alone won't give you the benefit of parallel processing, though. Furrr will import the [future](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html) package, which enables asynchronous processing once you define a plan. Typically, I write `plan(multisession)` or `plan(multicore)` before using my furrr functions in parallel.

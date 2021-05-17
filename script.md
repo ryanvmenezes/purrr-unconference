@@ -109,8 +109,7 @@ my.calcs
     ## $v3
     ## [1] 8
 
-Because `mean()` already exists in base R, I didn’t have to write a
-function ahead of time. `map()` requires that you give it two things:
+`map()` requires that you give it a few inputs:
 
 1.  A collection of items to iterate over. There are two basic types of
     collections in R: vectors and lists. Vectors are a collection of
@@ -120,7 +119,8 @@ function ahead of time. `map()` requires that you give it two things:
     example above, I set up a list holding three integer vectors.
 
 2.  A function to use on each item. If you’ve set up the function ahead
-    of time, you must only refer to it by name (`mean`) as opposed to
+    of time, or you’re using a function that already exists in base R or
+    a pacakge, you must only refer to it by name (`mean`) as opposed to
     calling the function (`mean()`). There are ways to write the
     function without setting it up ahead of time, which we’ll cover
     later.

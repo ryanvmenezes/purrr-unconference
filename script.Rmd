@@ -61,7 +61,7 @@ my.calcs
 
 `map()` requires that you give it a few inputs:
 
-1. A collection of items to iterate over. There are two basic types of collections in R: vectors and lists. Vectors are a collection of items of the same type: logical values, integers, doubles (floating point numbers) and characters. While vectors are homogeneous by rule, lists are collections that can hold a variety of types. In my example above, I set up a list holding three integer vectors.
+1. A collection of items to iterate over. There are two basic types of collections in R: vectors and lists. Vectors are a collection of items of the same type: logical values, integers, doubles (floating point numbers) and characters. While vectors are homogeneous by rule, lists are collections that can hold a variety of types; single values, vectors and even lists themselves can go inside a list. In my example above, I set up a list holding three integer vectors.
 
 2. A function to use on each item. If you've set up the function ahead of time, or you're using a function that already exists in base R or a package, you must only refer to it by name (`mean`) as opposed to calling the function (`mean()`). There are ways to write the function without setting it up ahead of time, which we'll cover later.
 
@@ -75,11 +75,11 @@ Roughly, every function has a two-step convention for its name: A part that spec
 
 With every purrr mapping function, the *last* input is always the custom function we want to use to manipulate our data. Let's call that `.f` in these examples.
 
-There are roughly three ways to pass inputs, each with a different purrr function: 
+There are roughly three ways to pass the other inputs, each with a differently named purrr function: 
 
-* `map(.x, .f)` to work on one collection of items. 
-* `map2(.x, .y, .f)` to work on two collections of similar size in parallel. In this case, your function needs to accept two arguments, which it will receive in pairs.
-* `pmap(.l, .f)` to work on a list of items. You'll need this when you want to work on three or more collections in parallel. Those collections must all be the same size and need to go into a list (`.l`). The function should accept as many arguments as there are collections in the list.
+* `map(.x, .f)` works on one collection of items. 
+* `map2(.x, .y, .f)` works on two collections of similar size in parallel. In this case, your function needs to accept two arguments, which it will receive in pairs.
+* `pmap(.l, .f)` works on a list of items. You'll need this when you want to work on three or more collections in parallel. Those collections must all be the same size and need to go into a list (`.l`), the lone argument before the function. The function should accept as many arguments as there are collections in the list.
 
 ### Type of output
 
@@ -89,6 +89,7 @@ Let's revisit the brief example from above. It returned a list with three number
 
 ```{r}
 my.calcs2 = map_dbl(my.list, mean)
+
 my.calcs2
 ```
 
@@ -108,9 +109,9 @@ Thankfully, if you're working with tabular data, you'll rarely have to peek unde
 
 ## Using purrr in data analysis
 
-purrr really shines when it's used in a analysis workflow to manipulate your tabular data.
+Purrr really shines when it's used in a analysis workflow to manipulate your tabular data.
 
-I'll assume that you have some basic knowledge of the tidyverse (if not I highly recommend [R for Data Science](https://r4ds.had.co.nz/), an excellent free resource that covers the entirety of the tidyverse, including purrr).
+Before moving on, I'll assume that you have some basic knowledge of the tidyverse (if not I highly recommend [R for Data Science](https://r4ds.had.co.nz/), an excellent free resource that covers the entirety of the tidyverse, including purrr).
 
 We're going to attempt a task that should be familiar to most journalists: You receive a data set that spans multiple files, with one file for each year of the data. You then need to bring them all in to R and assemble a single file.
 
@@ -126,11 +127,12 @@ First, let's start with a list of all the file names:
 
 ```{r}
 files = tibble(fname = list.files('data/')) %>% 
-  mutate(fname = str_c('data/', fname)) # add the folder name to the beginning of the file path
+   # add the folder name to the beginning of the file path
+  mutate(fname = str_c('data/', fname))
 
 files
 ```
-With a combination of `mutate()` and `map()`, we can read in each file and place the entire data frame in the same row as the file name:
+With a combination of `mutate()` and `map()`, we can send the file name to the read function, read in each file and place the entire data frame in the same row as the file name:
 
 ```{r}
 files.read = files %>% 
@@ -164,7 +166,7 @@ files.read$csv[[1]]
 ```
 That's the same table as above, which checks out.
 
-Now we can move to create our final data file, with the year column added to each data set. Luckily there are handy tidyverse functions to deal with exactly this type of data structure. They are called `nest()` and `unnest()`. The former converts your data set into groups with list-columns, the latter undoes that.
+Now we can move to creating our final data file, with the year column added to each data set. Luckily there are handy tidyverse functions to deal with exactly this type of data structure. They are called `nest()` and `unnest()`. The former converts your data set into groups with list-columns, the latter undoes that.
 
 What we need here is a basic `unnest()`:
 
@@ -276,4 +278,8 @@ The examples using `map2()` and `walk2()` highlight a hidden advantage of adapti
 
 * Jenny Bryan, a data scientist at RStudio and professor of statistics at the University of British Columbia, has a host of [purrr tutorials](https://jennybc.github.io/purrr-tutorial/). They are more focused on the fundamentals of purrr and less on the list-column workflow outlined here, but are helpful nonetheless. Her repurrrsive package helped me create the gapminder data files (see [create-data.R](/create-data.R) in this folder for that brief script).
 * I mentioned [R for Data Science](https://r4ds.had.co.nz/) earlier, an excellent introduction to all things tidyverse. The chapter called [Many Models](https://r4ds.had.co.nz/many-models.html) was particularly helpful for me when it came to understanding purrr. It explains how to create many different `lm()` objects and place them in a list-column.
-* A few words on the [furrr](https://furrr.futureverse.org/) package: Say you had to generate thousands of plots, instead of this limited example here. You might be interested in the furrr package, which runs purrr functions in parallel processes on your machine, to speed up your workflow. The under-the-hood mechanics of this are a little bit beyond me, but the package is really easy to use. Every purrr function has a furrr equivalent: You just need to prepend `future_` to the function call, creating `future_map()`, `future_map2()`, `future_pmap()` and more. That alone won't give you the benefit of parallel processing, though. Furrr will import the [future](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html) package, which enables asynchronous processing once you define a plan. Typically, I write `plan(multisession)` or `plan(multicore)` before using my furrr functions in parallel.
+* A few words on the [furrr](https://furrr.futureverse.org/) package: Say you had to generate thousands of plots, instead of this limited example here. You might be interested in the furrr package, which runs purrr functions in parallel processes on your machine, to speed up your workflow. The under-the-hood mechanics of this are a little bit beyond me, but the package is really easy to use. Every purrr function has a furrr equivalent: You just need to prepend `future_` to the function call, creating `future_map()`, `future_map2()`, `future_pmap()` and more. That alone won't give you the benefit of parallel processing, though. Furrr will import the [future](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html) package, which enables asynchronous processing once you define a plan. Typically, I write `plan(multisession)` or `plan(multicore)` before using my furrr functions in parallel. There's also a helpful progress bar option in furrr functions where you can see how far along your process is.
+
+## Questions? Comments? Errors?
+
+Contact me at ryanvmenezes@gmail.com, @ryanvmenezes on Twitter or in the News Nerdery Slack. Thanks for reading and I hope this was helpful.

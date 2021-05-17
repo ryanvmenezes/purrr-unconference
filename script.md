@@ -115,8 +115,9 @@ my.calcs
     collections in R: vectors and lists. Vectors are a collection of
     items of the same type: logical values, integers, doubles (floating
     point numbers) and characters. While vectors are homogeneous by
-    rule, lists are collections that can hold a variety of types. In my
-    example above, I set up a list holding three integer vectors.
+    rule, lists are collections that can hold a variety of types; single
+    values, vectors and even lists themselves can go inside a list. In
+    my example above, I set up a list holding three integer vectors.
 
 2.  A function to use on each item. If you’ve set up the function ahead
     of time, or you’re using a function that already exists in base R or
@@ -143,18 +144,18 @@ With every purrr mapping function, the *last* input is always the custom
 function we want to use to manipulate our data. Let’s call that `.f` in
 these examples.
 
-There are roughly three ways to pass inputs, each with a different purrr
-function:
+There are roughly three ways to pass the other inputs, each with a
+differently named purrr function:
 
-  - `map(.x, .f)` to work on one collection of items.
-  - `map2(.x, .y, .f)` to work on two collections of similar size in
+  - `map(.x, .f)` works on one collection of items.
+  - `map2(.x, .y, .f)` works on two collections of similar size in
     parallel. In this case, your function needs to accept two arguments,
     which it will receive in pairs.
-  - `pmap(.l, .f)` to work on a list of items. You’ll need this when you
+  - `pmap(.l, .f)` works on a list of items. You’ll need this when you
     want to work on three or more collections in parallel. Those
     collections must all be the same size and need to go into a list
-    (`.l`). The function should accept as many arguments as there are
-    collections in the list.
+    (`.l`), the lone argument before the function. The function should
+    accept as many arguments as there are collections in the list.
 
 ### Type of output
 
@@ -173,6 +174,7 @@ three floating-point numbers:
 
 ``` r
 my.calcs2 = map_dbl(my.list, mean)
+
 my.calcs2
 ```
 
@@ -208,13 +210,13 @@ more concrete example.
 
 ## Using purrr in data analysis
 
-purrr really shines when it’s used in a analysis workflow to manipulate
+Purrr really shines when it’s used in a analysis workflow to manipulate
 your tabular data.
 
-I’ll assume that you have some basic knowledge of the tidyverse (if not
-I highly recommend [R for Data Science](https://r4ds.had.co.nz/), an
-excellent free resource that covers the entirety of the tidyverse,
-including purrr).
+Before moving on, I’ll assume that you have some basic knowledge of the
+tidyverse (if not I highly recommend [R for Data
+Science](https://r4ds.had.co.nz/), an excellent free resource that
+covers the entirety of the tidyverse, including purrr).
 
 We’re going to attempt a task that should be familiar to most
 journalists: You receive a data set that spans multiple files, with one
@@ -266,7 +268,8 @@ First, let’s start with a list of all the file names:
 
 ``` r
 files = tibble(fname = list.files('data/')) %>% 
-  mutate(fname = str_c('data/', fname)) # add the folder name to the beginning of the file path
+   # add the folder name to the beginning of the file path
+  mutate(fname = str_c('data/', fname))
 
 files
 ```
@@ -287,8 +290,9 @@ files
     ## 11 data/2002.csv
     ## 12 data/2007.csv
 
-With a combination of `mutate()` and `map()`, we can read in each file
-and place the entire data frame in the same row as the file name:
+With a combination of `mutate()` and `map()`, we can send the file name
+to the read function, read in each file and place the entire data frame
+in the same row as the file name:
 
 ``` r
 files.read = files %>% 
@@ -367,7 +371,7 @@ files.read$csv[[1]]
 
 That’s the same table as above, which checks out.
 
-Now we can move to create our final data file, with the year column
+Now we can move to creating our final data file, with the year column
 added to each data set. Luckily there are handy tidyverse functions to
 deal with exactly this type of data structure. They are called `nest()`
 and `unnest()`. The former converts your data set into groups with
@@ -644,4 +648,11 @@ the tibble.
     [future](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html)
     package, which enables asynchronous processing once you define a
     plan. Typically, I write `plan(multisession)` or `plan(multicore)`
-    before using my furrr functions in parallel.
+    before using my furrr functions in parallel. There’s also a helpful
+    progress bar option in furrr functions where you can see how far
+    along your process is.
+
+## Questions? Comments? Errors?
+
+Contact me at <ryanvmenezes@gmail.com>, @ryanvmenezes on Twitter or in
+the News Nerdery Slack. Thanks for reading and I hope this was helpful.

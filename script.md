@@ -621,6 +621,10 @@ the tibble.
 
 ## Other purrr resources
 
+  - The [official RStudio cheatsheet on
+    purrr](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf)
+    is an indispensable resource (I keep a printed copy in front of me
+    when working).
   - Jenny Bryan, a data scientist at RStudio and professor of statistics
     at the University of British Columbia, has a host of [purrr
     tutorials](https://jennybc.github.io/purrr-tutorial/). They are more

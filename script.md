@@ -495,8 +495,9 @@ plots
     ## 5 Guatemala <tibble[,5] [12 × 5]> <gg>
 
 Again, tibbles helpfully provide a nice printout to see what we’re
-working with. Now, each cell holds a `<gg>` object, which should be a
-plot. Let’s take a look at that column to see what we made:
+working with. Again, we have a list-column in `plot`, with each cell
+holding a `<gg>` object, which should be a the plots themselves. Let’s
+take a look at that column to see what we made:
 
 ``` r
 plots %>% pull(plot) # equivalent to plots$plot
@@ -529,9 +530,11 @@ plots %>% pull(plot) # equivalent to plots$plot
 These plots serve a basic purpose. What would be a little bit nicer is
 if we could know which country corresponds to each plot. The country
 name is already on the same line as the data set. It’s easy enough to
-add, it only requires a tweak to call `map2()` instead of `map()`. This
-will create a `.y` variable inside the function that we can pass to
-ggplot as a label.
+add, it only requires a tweak to call `map2()` instead of `map()`. The
+country name column will slide into the second argument, bumping the
+inline function to the third argument. Calling `map2()` will also create
+a `.y` variable inside the function. Since `data` comes first in the
+function call, that gets assigned to `.x` and `country` to `.y`.
 
 ``` r
 plots = by.country %>% 
@@ -577,3 +580,46 @@ country which suffered the steep dip in life expectancy (this is due to
 a [long-lasting HIV/AIDS
 epidemic](https://en.wikipedia.org/wiki/HIV/AIDS_in_Botswana) in the
 country that still persists to this day).
+
+Finally, let’s save these plots to a folder. We can use a purrr style
+workflow to do that as well. This time we’ll use the `walk()` function,
+which is identical to `map()` except that it returns nothing. Since we’d
+like to only save plots and do nothing else, a `walk()` will work fine
+here. This also doesn’t need to stick to the tabular workflow we have
+used above, since nothing needs to be added as a column to the tibble.
+
+``` r
+walk2(
+  plots$plot,
+  plots$country,
+  ~ggsave(
+    filename = str_c('plots/', .y, '.png'),
+    plot = .x
+  )
+)
+```
+
+    ## Saving 7 x 5 in image
+    ## Saving 7 x 5 in image
+    ## Saving 7 x 5 in image
+    ## Saving 7 x 5 in image
+    ## Saving 7 x 5 in image
+
+## Other purrr resources
+
+  - Jenny Bryan, a data scientist at RStudio and professor of statistics
+    at the University of British Columbia, has a host of [purrr
+    tutorials](https://jennybc.github.io/purrr-tutorial/). They are more
+    focused on the fundamentals of purrr and less on the list-column
+    workflow outlined here, but are helpful nonetheless. Her
+    `repurrrsive` package helped me create the gapminder data files (see
+    `create-data.R` in this folder for that brief script).
+  - I mentioned [R for Data Science](https://r4ds.had.co.nz/) earlier,
+    an excellent introduction to all things tidyverse. The chapter
+    called [Many Models](https://r4ds.had.co.nz/many-models.html) was
+    particularly helpful for me understanding purrr. It explains how to
+    create many different `lm()` objects and place them in a list
+    column.
+  - A word for the `furrr` package: Say you had to generate thousands of
+    plots, instead of this limited example here. You might be interested
+    in the
